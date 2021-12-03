@@ -20,3 +20,9 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::post('/uploads', [FileUploadController::class, 'upload']);
+// Route::get('/uploads', [FileUploadController::class, 'getFiles']);
+
+Route::group(['middleware' => 'cors'], function(){
+    Route::get('/uploads', [FileUploadController::class, 'getFiles']);
+    Route::get('/downloads', [FileUploadController::class, 'downloadFiles']);
+});

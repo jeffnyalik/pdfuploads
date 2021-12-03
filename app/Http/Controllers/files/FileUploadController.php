@@ -11,7 +11,7 @@ class FileUploadController extends Controller
 {
     public function upload(Request $request){
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:doc,docx,pdf,txt,csv|max:2048'
+            'name' => 'required|mimes:doc,docx,pdf,txt,csv|max:2048'
         ]);
 
         if($validator->fails()){
@@ -19,13 +19,25 @@ class FileUploadController extends Controller
         }
 
         $fileProfile = new File();
-        if($request->file('file')){
-            $name = time().'.'.$request->file->extension();
-            $path = $request->file('file')->store('public/files');
+        if($request->file('name')){
+            $name = time().'.'.$request->name->extension();
+            $path = $request->file('name')->store('public/files');
             $fileProfile->path = Storage::url($path);
             $fileProfile->name=$name;
             $fileProfile->save();
         }
-        return response()->json($fileProfile, 200);
+        return response()->json(['message' => $fileProfile], 200);
+    }
+
+    public function getFiles(){
+        $files = File::all();
+        return response()->json($files, 200);
+    }
+
+    public function downloadFiles(){
+        $filePath = public_path('public/files');
+        $headers = ['Content-Type: application/pdf'];
+        $fileName = time().'.pdf';
+        return response()->download($filePath, $fileName, $headers);
     }
 }
